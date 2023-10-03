@@ -15,6 +15,9 @@ interface NetworkCallDao {
     @Query("SELECT * FROM networkcall")
     fun getAllNetworkCallFlow(): Flow<List<NetworkCall>>
 
+    @Query("SELECT * FROM networkcall")
+    fun getAllNetworkCall(): List<NetworkCall>?
+
     @Query("DELETE FROM networkcall")
     fun nukeNetworkCalls()
 }
