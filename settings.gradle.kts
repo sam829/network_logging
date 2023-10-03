@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "NetworkLogger"
 include(":app")
- 
+include(":network_logger")
