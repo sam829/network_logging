@@ -20,6 +20,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sam.network_logger.data.source.local.LoggerDatabase
 import com.sam.network_logger.data.source.local.entity.NetworkCall
+import com.sam.network_logger.helpers.startListeningToAccelerometer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -27,7 +28,7 @@ import kotlinx.coroutines.launch
 fun LogsSheet(
     materialTheme: MaterialTheme
 ) {
-    var isSheetOpen by remember { mutableStateOf(true) }
+    var isSheetOpen by remember { mutableStateOf(false) }
     var selectedNetworkCall: NetworkCall? by remember { mutableStateOf(null) }
     val isDetailView by remember { derivedStateOf { selectedNetworkCall != null } }
 
@@ -45,6 +46,7 @@ fun LogsSheet(
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
+            startListeningToAccelerometer(context, event) { isSheetOpen = true }
             if (event == Lifecycle.Event.ON_CREATE) {
                 scope.launch(Dispatchers.IO) {
                     if (!networkDao.getAllNetworkCall().isNullOrEmpty()) {
@@ -57,27 +59,28 @@ fun LogsSheet(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    ModalBottomSheet(
-        onDismissRequest = { isSheetOpen = false },
-        sheetState = bottomSheetState,
-    ) {
-        Crossfade(
-            targetState = isDetailView,
-            label = "NetworkLoggingInterceptor"
-        ) { shouldView ->
-            if (shouldView) {
-                LogDetail(
-                    materialTheme = materialTheme,
-                    selectedNetworkCall = selectedNetworkCall,
-                    onClick = { selectedNetworkCall = null }
-                )
-            } else {
-                LogList(
-                    materialTheme = materialTheme,
-                    data = data,
-                    onItemClick = { selectedNetworkCall = it }
-                )
+    if (isSheetOpen)
+        ModalBottomSheet(
+            onDismissRequest = { /*isSheetOpen = false*/ },
+            sheetState = bottomSheetState,
+        ) {
+            Crossfade(
+                targetState = isDetailView,
+                label = "NetworkLoggingInterceptor"
+            ) { shouldView ->
+                if (shouldView) {
+                    LogDetail(
+                        materialTheme = materialTheme,
+                        selectedNetworkCall = selectedNetworkCall,
+                        onClick = { selectedNetworkCall = null }
+                    )
+                } else {
+                    LogList(
+                        materialTheme = materialTheme,
+                        data = data,
+                        onItemClick = { selectedNetworkCall = it }
+                    )
+                }
             }
         }
-    }
 }
