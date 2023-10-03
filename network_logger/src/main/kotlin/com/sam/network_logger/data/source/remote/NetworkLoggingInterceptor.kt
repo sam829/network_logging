@@ -10,13 +10,7 @@ import java.util.concurrent.TimeUnit
 
 class NetworkLoggingInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-
         val request = chain.request()
-        Log.e("NetworkLoggingInterceptor", "Headers:: ${request.headers}")
-        Log.e("NetworkLoggingInterceptor", "Method:: ${request.method}")
-        Log.e("NetworkLoggingInterceptor", "URL:: ${request.url}")
-        Log.e("NetworkLoggingInterceptor", "Body:: ${request.body}")
-        Log.e("NetworkLoggingInterceptor", "Tag:: ${request.tag().toString()}")
         val requestNetworkCall = NetworkCall(
             requestHeader = request.headers.toString(),
             requestMethod = request.method,
@@ -36,12 +30,6 @@ class NetworkLoggingInterceptor(private val context: Context) : Interceptor {
             val responseBody by lazy { response.peekBody(Long.MAX_VALUE).string() }
 
             val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startMs)
-
-            Log.e("NetworkLoggingInterceptor", "Headers:: ${response.headers}")
-            Log.e("NetworkLoggingInterceptor", "Code:: ${response.code}")
-            Log.e("NetworkLoggingInterceptor", "Message:: ${response.message}")
-            Log.e("NetworkLoggingInterceptor", "Protocol:: ${response.protocol.name}")
-            Log.e("NetworkLoggingInterceptor", "Challenge:: ${response.challenges()}")
 
             val responseNetworkCallWithRequest = requestNetworkCall.copy(
                 responseHeaders = response.headers.toString(),
