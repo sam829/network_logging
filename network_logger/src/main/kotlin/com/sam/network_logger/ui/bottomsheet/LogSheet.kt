@@ -21,7 +21,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,8 +35,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sam.network_logger.data.source.local.LoggerDatabase
 import com.sam.network_logger.data.source.local.entity.NetworkCall
 import com.sam.network_logger.helpers.startListeningToAccelerometer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun LogsSheet(
@@ -47,7 +44,7 @@ fun LogsSheet(
     var selectedNetworkCall: NetworkCall? by remember { mutableStateOf(null) }
     val isDetailView by remember { derivedStateOf { selectedNetworkCall != null } }
 
-    val scope = rememberCoroutineScope()
+//    val scope = rememberCoroutineScope()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -57,10 +54,10 @@ fun LogsSheet(
         .collectAsStateWithLifecycle(initialValue = emptyList())
 
     BackHandler(enabled = isDetailView || isSheetOpen) {
-        if(!isDetailView) {
+        if (!isDetailView) {
             isSheetOpen = false
         }
-        if(isDetailView) {
+        if (isDetailView) {
             selectedNetworkCall = null
         }
     }
@@ -69,11 +66,11 @@ fun LogsSheet(
         val observer = LifecycleEventObserver { _, event ->
             startListeningToAccelerometer(context, event) { isSheetOpen = true }
             if (event == Lifecycle.Event.ON_CREATE) {
-                scope.launch(Dispatchers.IO) {
+                /*scope.launch(Dispatchers.IO) {
                     if (!networkDao.getAllNetworkCall().isNullOrEmpty()) {
                         networkDao.nukeNetworkCalls()
                     }
-                }
+                }*/
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -141,13 +138,14 @@ fun LogsSheet(
                         ) {
                             LogList(
                                 materialTheme = materialTheme,
-                                data = data.filter { it.requestUrl?.contains(query) == true },
+                                data = data.filter { it.requestUrl?.contains(query) == true }
+                                    .reversed(),
                                 onItemClick = { selectedNetworkCall = it }
                             )
                         }
                         LogList(
                             materialTheme = materialTheme,
-                            data = data,
+                            data = data.reversed(),
                             onItemClick = { selectedNetworkCall = it }
                         )
                     }

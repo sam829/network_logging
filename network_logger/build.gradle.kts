@@ -2,7 +2,11 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
+    id("maven-publish")
 }
+
+group = "com.sam"
+version = "1.0.0"
 
 android {
     namespace = "com.sam.network_logger"
@@ -80,4 +84,56 @@ dependencies {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     compilerOptions.freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
     compilerOptions.freeCompilerArgs.add("-opt-in=androidx.compose.foundation.ExperimentalFoundationApi")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("NetworkLogger") {
+            groupId = "com.sam"
+            artifactId = "network-logger"
+            version = "1.0.0"
+
+            pom {
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("sam829")
+                        name.set("Sam Macwan")
+                        email.set("macwansaumya2@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/sam829/network_logging.git")
+                    developerConnection.set("scm:git:ssh://github.com/sam829/network_logging.git")
+                }
+            }
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "MavenCentral"
+            /*url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = project.findProperty("ossrhUsername")?.toString()
+                    ?: System.getenv("OSSRH_USERNAME")
+                password = project.findProperty("ossrhPassword")?.toString()
+                    ?: System.getenv("OSSRH_PASSWORD")
+            }*/
+            url = uri("https://repo1.maven.org/maven2/")
+            credentials {
+                username = project.findProperty("mavenCentralUsername")?.toString()
+                password = project.findProperty("mavenCentralPassword")?.toString()
+            }
+        }
+    }
 }
