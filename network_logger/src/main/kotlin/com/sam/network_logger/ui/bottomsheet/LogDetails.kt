@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sam.network_logger.data.source.local.entity.NetworkCall
+import com.sam.network_logger.helpers.prettyPrintJson
 
 @Composable
 fun LogDetail(
@@ -33,13 +34,21 @@ fun LogDetail(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         stickyHeader {
-            Row {
-                IconButton(onClick = onClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "Back button"
+            Row(
+                modifier = Modifier.then(
+                    if (selectedNetworkCall?.isError == true) Modifier.background(
+                        color = materialTheme.colorScheme.error
+                    ) else Modifier.background(
+                        color = materialTheme.colorScheme.primaryContainer
                     )
-                }
+                )
+            ) {
+//                IconButton(onClick = onClick) {
+//                    Icon(
+//                        imageVector = Icons.Rounded.ArrowBack,
+//                        contentDescription = "Back button"
+//                    )
+//                }
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -47,10 +56,11 @@ fun LogDetail(
                     text = selectedNetworkCall?.requestUrl ?: "0",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    color = if (selectedNetworkCall?.isError == true) materialTheme.colorScheme.onErrorContainer else materialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
-        stickyHeader {
+        item {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -84,7 +94,7 @@ fun LogDetail(
                 DataCell(
                     materialTheme = materialTheme,
                     title = "Request Body",
-                    data = selectedNetworkCall?.requestBody
+                    data = selectedNetworkCall?.requestBody?.prettyPrintJson()
                 )
                 DataCell(
                     materialTheme = materialTheme,
@@ -103,7 +113,7 @@ fun LogDetail(
                 )
             }
         }
-        stickyHeader {
+        item {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,7 +167,7 @@ fun LogDetail(
                 DataCell(
                     materialTheme = materialTheme,
                     title = "Response Body",
-                    data = selectedNetworkCall?.responseBody
+                    data = selectedNetworkCall?.responseBody?.prettyPrintJson()
                 )
             }
         }

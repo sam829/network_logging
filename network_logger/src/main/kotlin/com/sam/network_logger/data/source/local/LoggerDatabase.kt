@@ -9,7 +9,8 @@ import com.sam.network_logger.data.source.local.entity.NetworkCall
 
 @Database(
     entities = [NetworkCall::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 abstract class LoggerDatabase : RoomDatabase() {
     abstract fun networkCallDao(): NetworkCallDao

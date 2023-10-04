@@ -24,4 +24,5 @@ data class NetworkCall(
     val responseContentType: String? = null,
     val responseContentLength: Long? = null,
     val timeTaken: Long? = null,
+    val isError: Boolean = true,
 )
