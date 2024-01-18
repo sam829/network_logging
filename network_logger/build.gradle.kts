@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("maven-publish")
+    id("org.jetbrains.dokka") version "1.9.0"
 }
 
 group = "com.sam"
@@ -79,6 +80,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.9.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
@@ -137,3 +140,11 @@ publishing {
         }
     }
 }
+
+
+//dokka {
+//    outputFormat = "html" // or other formats like "markdown"
+//    outputDirectory = "$buildDir/docs" // Output directory for generated documentation
+//    // Additional configuration options
+//}
+
